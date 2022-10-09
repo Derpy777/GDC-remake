@@ -1,0 +1,202 @@
+﻿
+game_information {
+   game_name                    = GDC
+   game_version                 = 0.0.1
+   game_shortname               = GDC aventure
+   written_by                   = Derpy
+   uuid                         = 6d35fbe5-deae-41ce-b1f3-37c32c4a2828
+   year_of_release              = 2022
+   copyright_message            = Derpy Studio TM
+   short_synopsis               = GDC L'ultime aventure !!!
+}
+
+
+
+game_settings {
+   scan_entity_ids_for_vocab_items = false
+}
+
+start_at = entree_donjon
+start_theme  = mytheme
+
+
+
+
+
+
+## Defines locations in the world
+
+locations {
+   long_couloir_entree : location "Vous êtes dans un long couloir taillé dans roche." ;
+   entree_donjon  : location "Vous êtes dans la salle à l'entrée du donjon." ;
+}
+
+# Defines things in the world (scenery cannot be carried)
+
+objects {
+   
+   sortie_entree : scenery "une sortie dans le mur du fond" at = "entree_donjon" noun = "sortie" msg = "l'endroit ou mêne cette sortie n'est pas éclairé." ;
+   
+   panneau_entree : scenery "un panneau en bois"  at = "entree_donjon" noun="panneau" msg="C'est vrai que maintenant que vos yeux commencent à s'habituer au faible éclairage de la pièce, vous discernez un panneau en bois au-dessus de la sortie de la pièce et quelque chose est inscrit dessus :\n BIENVENUE CHEZ L'ELITE\n....... Décidément, vous le sentez vraiment mal ce donjon.";
+   
+   torche_entree : object "une torche" at="entree_donjon" noun="torche"  msg="bha c'est juste une torche quoi..." weight = "2" ;
+}
+   
+connections {
+
+   ## Connects locations together (bidirectional)
+   
+   from, direction, to = [
+      entree_donjon, north, long_couloir_entree
+   ]
+}
+
+barriers {
+
+   ## Blocks Access To Cave Whilst Troll Exists (with message)
+   
+   block_obscurité_long_couloir_entree : block {
+      location           = long_couloir_entree
+      message            = L'obscurité de ce passage est trop épaisse.
+      block_when_not_carried = torche_entree
+      show_blocked_exit  = true
+   }
+   
+} 
+
+## Print the objective when the game starts
+
+on_startup {
+   : print "GDC L'AVENTURE ULTIME - Remake edition !" ;
+   : print "---------------------------------------" ;
+   : print "A Derpy studio production (Bha quoi....? ^^_^^ )" ;
+   : press_any_key ;
+   : clear_screen ;
+   : print " La porte se referme violemment derrière vous, vous essayez aussitot de la réouvrir mais rien à faire, elle ne bouge pas...\n Proférant un juron, vous donnez un grand coup de pied dedans, cette quête puait la merde dès que vous avez appris son existance, mais bon sang qu'est ce qui vous est passé par la tête d'accepter...?" ;
+   : press_any_key ;
+   : clear_screen ;
+   : print "Vous auriez dû écouter votre instinct et vous l'auriez sûrement fait si c'était pas tellement la dèche en ce moment...\n La récompense promise par cet enfoiré à la terverne était la bienvenue, surtout pour ce qu'il décrivait comme une aventure facile !\n Quand vous sortirez d'ici il va vous entendre ce c******* , et il va en cracher du fric...!\n Mais il va d'abord falloir trouver cet artefact merdique qui est censé se trouver en ce lieu. Le EssesseDayMagik... Tu parles d'un nom !\n Ah et il va aussi falloir sortir d'ici... *soupir*\n Bon, bah quand il faut y aller, il faut y aller, je suppose..." ;
+   : press_any_key ;
+   : clear_screen ;
+   : print "Laissant derrière vous la porte d'entrée du donjon, vous regardez la pièce.\n Il n'y a pas grand chose à voir cela dit...\n C'est une pièce rectangulaire, toute simple éclairée d'une seule torche avec des murs en pierres taillées.\n La pièce ne comporte qu'une seule sortie : une ouverture dans le mur à l'opposé de la pièce.\n Cela dit, il y a quelque chose qui..." ;
+   : press_any_key ;
+}
+
+## Execute this every time a player moves or redescribes a location
+
+on_describe {
+   : if (is_at "long_couloir_entree" ) {
+      : print "Ce long couloir est plongé dans l'obscurité, heureusement que vous avez une torche." ;
+   }
+}
+
+## Test VERB NOUN that the player types and executes conditional actions
+
+on_command {
+
+   ## entree_donjon
+
+   ##: match "prendre torche"  {
+   ##   : if (is_present "troll" && is_carried "apple") {
+   ##      : print   "The troll eats the apple then wanders off." ;
+   ##      : destroy "apple" ;
+   ##      : destroy "troll" ;
+   ##   }
+   ##}
+}
+
+vocabulary {
+
+   // Here we assocated new words with the already supported english system vocab
+   : verb / aliases = [examine,   examiner   ]
+   : verb / aliases = [get,       prendre, ramasser       ]
+   : verb / aliases = [drop,      lacher      ]
+   : verb / aliases = [inventory, inventaire ]
+   : verb / aliases = [look,      voir, regarder ]
+   : verb / aliases = [quit,      quitter      ]
+   : verb / aliases = [help, aide]
+
+}
+
+
+themes {
+   mytheme : theme {
+
+      ##########################################
+      ## Step two - rewrite system messages
+      ##          - order of the compass directions matters, and must be translated in full (all 12)
+      ##########################################
+      system_messages {
+         compass                                        = [nord, nord-est, est, sud-est, sud, sud-ouest,  ouest, nord-ouest, haut, bas, entrer, exit]
+         compass_short                                  = [n, ne, e, se, s, sw, w, nw, h, b, in, out]
+         all_treasures_found_win_game                   = Congratulations, you found all the treasures. You have won!
+         already_in_container                           = ${entity} est déjà à l'intérieur du ${entity2}.
+         ask_new_game                                   = Would you like to start a new game?
+         ask_quit                                       = Do you wish to quit the game?
+         be_more_specific                               = Soyez plus spécifique ...\s
+         cannot_carry_any_more                          = You cannot carry any more items.
+         cannot_carry_any_more_weight                   = It's too heavy for you to carry.
+         cant_see_one_of_those                          = You can't see one of those.
+         cant_take                                      = Vous ne pouvez pas prendre cette chose.
+         dont_have_one_of_those                         = You don't have one of those!
+         exit_list_additional_exits_are_located_verbose = Additional exits are located\s
+         exit_list_end_text                             =
+         exit_list_end_text_verbose                     = .
+         exit_list_from_here_you_can_go_verbose         = Vous pouvez aller au\s
+         exit_list_header_concise                       = Sorties :\s
+         exit_list_last_sep_verbose                     = \set\s
+         exit_list_sep_verbose                          = ,\s
+         exit_list_there_are_no_obvious_exits           = Il n'y a pas de sorties apparentes.
+         exit_list_to_the_verbose                       = to the
+         exit_list_you_can_also_go_verbose              = Vous pouvez aussi aller\s
+         gamebook_question                              = Select An Option ...
+         i_cant_do_that                                 = Vous ne pouvez pas faire ça.
+         invalid_choice                                 = Choix invalide.
+         inventory_list_empty                           = Vide
+         inventory_list_end_text                        = .
+         inventory_list_final_separator                 = \set\s
+         inventory_list_header                          = Vous transportez:\s
+         inventory_list_header_verbose                  = Vous transportez\s
+         inventory_list_separator                       = ,\s
+         it_is_dark                                     = Il fait trop sombre. Vous ne voyez rien.
+         must_remove_first                              = Essayez de le déséquiper d'abord.
+         not_carried                                    = Vous ne pouvez pas ${verb} quelque chose que vous ne transportez pas.
+         not_present                                    = ${entity} n'est pas là.
+         nothing_here                                   = Il n'y a rien.
+         nothing_to_get                                 = Vous regardez autour mais vous ne voyez pas de ${noun} !
+         object_list_empty                              = Rien
+         object_list_end_text                           = .
+         object_list_final_separator                    = \set\s
+         object_list_header                             = Vous voyez :\s
+         object_list_header_verbose                     = Vous voyez\s
+         object_list_separator                          = ,\s
+         ok                                             = OK
+         on_drop                                        = Vous lachez ${entity}.
+         on_get                                         = Vous prenez ${entity}.
+         on_put                                         = Vous mettez ${entity} dans ${entity2}.
+         on_put_non_container                           = ${entity} n'est pas un conteneur.
+         on_put_non_surface                             = ${entity} n'est pas une surface.
+         on_remove                                      = Vous enlevez ${entity}.
+         on_wear                                        = Vous portez ${entity}.
+         post_quit                                      = Vous avez quitté le jeu.
+         prior_prompt                                   = Et maintenant?
+         prompt                                         = >>
+         question_prompt_char                           = ?
+         there_is_nothing_you_can                       = Il n'y a rien que vous pouvez ${verb} pour le moment.
+         treasure_message                               =
+         treasure_suffix                                =
+         unknown_noun                                   = Le jeu ne comprend pas votre mot là : "${noun}".
+         unknown_verb                                   = Le jeu ne comprend pas votre verbe là : "${verb}".
+         worn_suffix                                    = \s(porté)
+         you_already_wear                               = Vous portez déjà ce truc.
+         you_are_already_carrying                       = Vous portez déjà ${entity}.
+         you_are_not_holding                            = Vous ne tenez pas ${entity}.
+         you_cant_go_that_direction                     = Vous ne pouvez pas allez par là.
+         you_cant_wear                                  = Vous ne pouvez pas transporter ça.
+         you_cant_wear_anything_else                    = Vous ne pouvez rien transporter d'autre sans jetter quelque chose d'abbord.
+         you_dont_wear                                  = Vous ne transportez pas ça.
+         you_see_nothing_special                        = Vous ne voyez rien de spécial.
+      }
+   }
+}
+
